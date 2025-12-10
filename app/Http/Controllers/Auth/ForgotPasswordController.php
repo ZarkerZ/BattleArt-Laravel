@@ -12,7 +12,7 @@ class ForgotPasswordController extends Controller
 {
     public function showLinkRequestForm()
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot');
     }
 
     public function sendResetLinkEmail(Request $request)
@@ -25,7 +25,7 @@ class ForgotPasswordController extends Controller
             // Generate Token
             $token = Str::random(32); // Using Laravel Str helper is cleaner than bin2hex
             $token_hash = hash('sha256', $token);
-            
+
             $user->reset_token_hash = $token_hash;
             $user->reset_token_expires_at = Carbon::now()->addMinutes(30);
             $user->save();
@@ -33,7 +33,7 @@ class ForgotPasswordController extends Controller
             // Send Email using standard Laravel Mail
             // Note: You need to create a Mailable, or use raw for quick migration
             $resetLink = url('/reset-password?token=' . $token);
-            
+
             try {
                 Mail::send([], [], function ($message) use ($user, $resetLink) {
                     $message->to($user->user_email)

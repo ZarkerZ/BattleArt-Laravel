@@ -11,7 +11,7 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto align-items-center">
-                
+
                 @auth
                     {{-- ADMIN MENU --}}
                     @if(Auth::user()->user_type === 'admin')
@@ -30,7 +30,7 @@
                                 <i class="fa fa-comments" aria-hidden="true"></i> Comments
                             </a>
                         </li>
-                        
+
                         <li class="nav-item position-relative">
                             <a class="nav-link" href="{{ url('/notifications') }}">
                                 <i class="fa fa-inbox" aria-hidden="true"></i> Inbox
@@ -44,6 +44,11 @@
                         <li class="nav-item">
                             <a href="{{ url('/admin/profile') }}" class="nav-link">
                                 <i class="fa fa-user-circle" aria-hidden="true"></i> Profile
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/settings') }}">
+                                <i class="fas fa-cog me-1"></i> Settings
                             </a>
                         </li>
                         <li class="nav-item">
@@ -93,7 +98,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-1"></i> Sign In</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('register') }}"><i class="fas fa-user-plus me-1"></i> Sign Up</a></li>
                 @endauth
-                
+
             </ul>
         </div>
     </div>

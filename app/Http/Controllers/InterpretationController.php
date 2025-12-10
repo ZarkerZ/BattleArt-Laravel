@@ -68,11 +68,13 @@ class InterpretationController extends Controller
         $interpretations = DB::table('interpretations as i')
             ->join('users as u', 'i.user_id', '=', 'u.user_id')
             ->where('i.challenge_id', $challenge_id)
+            ->where('i.status', 'active')
             ->select(
                 'i.*',
                 'u.user_id as author_id',
                 'u.user_userName',
                 'u.user_profile_pic',
+                'u.account_status',
                 DB::raw('(SELECT COUNT(*) FROM interpretation_likes WHERE interpretation_id = i.interpretation_id) as like_count'),
                 DB::raw('(SELECT COUNT(*) FROM interpretation_likes WHERE interpretation_id = i.interpretation_id AND user_id = ' . ($user_id ?? 0) . ') as user_has_liked')
             )

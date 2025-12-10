@@ -46,7 +46,7 @@ Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 // Public Views (Artworks & Profiles)
 Route::get('/challenges', [ChallengeController::class, 'index'])->name('challenges.index');
-Route::get('/challenge/{id}', [ChallengeController::class, 'show'])->name('challenges.show');
+Route::get('/challenge/{id}', [ChallengeController::class, 'show'])->name('challenges.show') ->whereNumber('id');
 Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
 Route::get('/interpretations', [InterpretationController::class, 'index'])->name('interpretations.index');
 Route::get('/check-rating-update', [RatingPollingController::class, 'check']);

@@ -6,38 +6,125 @@
     <title>Interpretations for {{ $challenge->challenge_name }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link href="{{ asset('assets/css/navbar.css') }}" rel="stylesheet">
     <style>
-        body { background-image: linear-gradient(to bottom, #a6e7ff, #c3b4fc); min-height: 100vh; padding-top: 20px; }
-        .card { border: none; border-radius: 15px; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        .interpretation-card { background-color: #f9f9f9; }
-        .badge-banned { background-color: #dc3545; color: white; font-size: 0.65em; margin-left: 4px; }
-        .floating-back-btn { z-index: 1050; }
+        :root {
+            /* --- DESIGN SYSTEM VARIABLES --- */
+            --primary-color: #5a4bda;       /* Deep Royal Purple */
+            --primary-hover: #4335b8;
+            --secondary-color: #f8f9fa;     /* Clean Light Gray Background */
+            --text-dark: #1e293b;           /* Slate Dark */
+            --text-muted: #64748b;          /* Slate Gray */
+            --card-radius: 16px;
+
+            /* Navbar Fix Variables */
+            --primary-bg: #5a4bda;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            padding-top: 80px; /* Space for fixed navbar */
+            min-height: 100vh;
+        }
+
+        /* --- FORCE NAVBAR PURPLE --- */
+        .custom-navbar {
+            background-color: var(--primary-color) !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- PAGE HEADER --- */
+        .page-header-card {
+            background: #fff;
+            border-radius: var(--card-radius);
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* --- INTERPRETATION CARDS --- */
+        .interpretation-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            height: 100%;
+        }
+
+        .interpretation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+        }
+
+        .badge-banned {
+            background-color: #ef4444;
+            color: white;
+            font-size: 0.65em;
+            margin-left: 4px;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+        }
+
+        /* --- BUTTONS --- */
+        .floating-back-btn {
+            z-index: 1050;
+            background-color: #fff;
+            color: var(--text-dark);
+            border: 1px solid rgba(0,0,0,0.1);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .floating-back-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            color: white;
+        }
     </style>
 </head>
 <body>
     @include('partials.navbar')
 
-    <div class="container py-3 py-md-5">
-        <header class="text-center mb-4 mb-md-5 bg-white p-3 p-md-4 rounded-3 shadow-sm mx-auto" style="max-width: 600px;">
-            <h1 class="h3 fw-bold">All Interpretations</h1>
-            <p class="text-muted mb-0">For: <strong>{{ $challenge->challenge_name }}</strong></p>
+    <div class="container py-4">
+        <header class="page-header-card mx-auto" style="max-width: 700px;">
+            <h1 class="h3 fw-bold" style="color: var(--text-dark);">All Interpretations</h1>
+            <p class="text-muted mb-0">Browsing gallery for: <strong style="color: var(--primary-color);">{{ $challenge->challenge_name }}</strong></p>
         </header>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
             @forelse($interpretations as $interp)
                 <div class="col">
-                    <div class="card h-100 interpretation-card" data-interpretation-id="{{ $interp->interpretation_id }}">
+                    <div class="card interpretation-card shadow-sm" data-interpretation-id="{{ $interp->interpretation_id }}">
                         <div class="card-body d-flex flex-column p-3">
-                            <div class="d-flex align-items-center mb-2">
+                            <div class="d-flex align-items-center mb-3">
                                 <img src="{{ $interp->user_profile_pic ? asset('assets/uploads/'.$interp->user_profile_pic) : asset('assets/images/blank-profile-picture.png') }}"
-                                     class="rounded-circle me-2 border" width="24" height="24" style="object-fit: cover;">
-                                <span class="small fw-bold text-truncate">{{ $interp->user_userName }}</span>
+                                     class="rounded-circle me-2 border" width="28" height="28" style="object-fit: cover;"
+                                     onerror="this.src='{{ asset('assets/images/blank-profile-picture.png') }}';">
+                                <span class="small fw-bold text-truncate text-dark">{{ $interp->user_userName }}</span>
                                 @if($interp->account_status === 'banned') <span class="badge badge-banned">Banned</span> @endif
                             </div>
 
-                            <a href="#" class="d-block mb-3" data-bs-toggle="modal" data-bs-target="#interpretationModal"
+                            <a href="#" class="d-block mb-3 rounded overflow-hidden" data-bs-toggle="modal" data-bs-target="#interpretationModal"
                                data-img-src="{{ asset('assets/uploads/' . $interp->art_filename) }}"
                                data-artist-name="{{ $interp->user_userName }}"
                                data-artist-avatar="{{ $interp->user_profile_pic ? asset('assets/uploads/'.$interp->user_profile_pic) : asset('assets/images/blank-profile-picture.png') }}"
@@ -46,13 +133,15 @@
                                data-interpretation-id="{{ $interp->interpretation_id }}"
                                data-like-count="{{ $interp->like_count }}"
                                data-user-has-liked="{{ $interp->user_has_liked }}">
-                                <img src="{{ asset('assets/uploads/'.$interp->art_filename) }}" class="img-fluid rounded shadow-sm w-100" style="height: 250px; object-fit: cover;">
+                                <img src="{{ asset('assets/uploads/'.$interp->art_filename) }}" class="img-fluid w-100" style="height: 250px; object-fit: cover; transition: transform 0.5s ease;">
                             </a>
 
-                            <p class="small text-muted fst-italic mt-auto text-truncate">{{ $interp->description }}</p>
+                            <p class="small text-muted fst-italic mt-auto text-truncate mb-2">
+                                {{ $interp->description ? '"'.$interp->description.'"' : '' }}
+                            </p>
 
-                            <div class="border-top pt-2 mt-2 text-muted small">
-                                <i class="fas fa-heart {{ $interp->user_has_liked ? 'text-danger' : 'text-secondary' }}"></i>
+                            <div class="border-top pt-2 mt-auto d-flex align-items-center text-muted small fw-semibold">
+                                <i class="fas fa-heart {{ $interp->user_has_liked ? 'text-danger' : 'text-secondary' }} me-1"></i>
                                 <span class="card-like-count">{{ $interp->like_count }}</span>
                             </div>
                         </div>
@@ -60,24 +149,27 @@
                 </div>
             @empty
                 <div class="col-12 text-center">
-                    <div class="alert alert-light shadow-sm border-0">No interpretations yet.</div>
+                    <div class="alert alert-light shadow-sm border-0 py-5 rounded-4">
+                        <i class="fas fa-images fa-2x text-muted mb-3"></i>
+                        <p class="mb-0 text-muted">No interpretations submitted yet.</p>
+                    </div>
                 </div>
             @endforelse
         </div>
 
-        <a href="{{ route('challenges.show', $challenge->challenge_id) }}" class="btn btn-light shadow position-fixed bottom-0 end-0 m-3 m-md-4 rounded-pill px-4 floating-back-btn">
-            <i class="fas fa-arrow-left me-2"></i> Back
+        <a href="{{ route('challenges.show', $challenge->challenge_id) }}" class="btn floating-back-btn shadow rounded-pill px-4 py-2 position-fixed bottom-0 end-0 m-4">
+            <i class="fas fa-arrow-left me-2"></i> Back to Challenge
         </a>
     </div>
 
     <div class="modal fade" id="loginPromptModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content rounded-4 shadow-lg text-center p-4">
-                <div class="mb-3"><i class="fas fa-user-lock fa-3x text-secondary"></i></div>
+            <div class="modal-content rounded-4 shadow-lg text-center p-4 border-0">
+                <div class="mb-3"><i class="fas fa-lock fa-3x" style="color: var(--primary-color);"></i></div>
                 <h5 class="fw-bold mb-2">Login Required</h5>
                 <p class="text-muted small mb-4">You need to be logged in to perform this action.</p>
                 <div class="d-grid gap-2">
-                    <a href="{{ route('login') }}" class="btn btn-primary rounded-pill">Login</a>
+                    <a href="{{ route('login') }}" class="btn btn-primary-custom rounded-pill">Login</a>
                     <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -86,18 +178,18 @@
 
     <div class="modal fade" id="interpretationModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content rounded-4">
-                <div class="modal-header border-0">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
                     <div id="modalArtistInfo"></div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center p-0">
-                    <img id="modalImage" src="" class="img-fluid" style="max-height: 70vh; width: 100%; object-fit: contain; background: #f8f9fa;">
-                    <div class="p-3">
+                <div class="modal-body text-center p-4">
+                    <img id="modalImage" src="" class="img-fluid rounded shadow-sm" style="max-height: 70vh; width: auto; object-fit: contain;">
+                    <div class="mt-3">
                         <p id="modalDescription" class="fst-italic text-muted mb-0"></p>
                     </div>
                 </div>
-                <div class="modal-footer border-0 justify-content-center" id="modalFooterActions"></div>
+                <div class="modal-footer border-0 justify-content-center pt-0 pb-4" id="modalFooterActions"></div>
             </div>
         </div>
     </div>
@@ -129,9 +221,15 @@
                     interpretationModal.querySelector('#modalDescription').textContent = description ? `"${description}"` : '';
 
                     const profileUrl = "{{ url('/profile') }}/" + artistId;
+
+                    // --- FIXED: ADDED ONERROR HANDLER TO MODAL JS ---
                     interpretationModal.querySelector('#modalArtistInfo').innerHTML = `
                         <a href="${profileUrl}" class="d-flex align-items-center text-decoration-none text-dark">
-                            <img src="${artistAvatar}" class="rounded-circle me-2" width="32" height="32" style="object-fit:cover;">
+                            <img src="${artistAvatar}"
+                                 class="rounded-circle me-2"
+                                 width="32" height="32"
+                                 style="object-fit:cover;"
+                                 onerror="this.onerror=null; this.src='{{ asset('assets/images/blank-profile-picture.png') }}';">
                             <span class="fw-bold">${artistName}</span>
                         </a>`;
 

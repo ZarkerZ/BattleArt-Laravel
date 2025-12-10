@@ -1,95 +1,192 @@
-<form method="post" action="{{ route('password.update') }}">
-    @csrf
-    <input type="hidden" name="token" value="{{ $token }}">
-    ```
-
-**2. `resources/views/profile/show.blade.php`**
-(This replaces both `profile.php` and `public_profile.php`. Use `$isOwnProfile` to check if you should show the "Edit" button).
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $user->user_userName }} - Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BattleArt - Reset Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="{{ asset('assets/css/custom.css') }}" rel="stylesheet">
-    </head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/doro.ico') }}">
+
+    <style>
+        :root {
+            /* --- DESIGN SYSTEM VARIABLES --- */
+            --primary-color: #5a4bda;       /* Deep Royal Purple */
+            --primary-hover: #4335b8;
+            --secondary-color: #f8f9fa;     /* Clean Light Gray Background */
+            --text-dark: #1e293b;           /* Slate Dark */
+            --text-muted: #64748b;          /* Slate Gray */
+            --card-radius: 16px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #eef2ff 100%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- AUTH CARD --- */
+        .auth-card {
+            background-color: #ffffff;
+            border-radius: var(--card-radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0,0,0,0.02);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        .brand-title {
+            color: var(--primary-color);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* --- FORM ELEMENTS --- */
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-right: none;
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            border: 1px solid #e2e8f0;
+            border-left: none;
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+            padding: 0.7rem 1rem 0.7rem 0;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(90, 75, 218, 0.1);
+            border-left: 1px solid var(--primary-color);
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: var(--primary-color);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(90, 75, 218, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+            transform: translateX(-3px);
+        }
+
+        /* --- ALERTS --- */
+        .alert-danger {
+            background-color: #fef2f2;
+            border-color: #fee2e2;
+            color: #ef4444;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
 <body>
-    @include('partials.navbar')
-
-    <div class="profile-container">
-        <img src="{{ $user->user_banner_pic ? asset('assets/uploads/' . $user->user_banner_pic) : asset('assets/images/night-road.png') }}" class="profile-banner">
-
-        <ul class="nav nav-pills profile-tabs" id="profile-tabs">
-            <li class="nav-item"><a class="nav-link active" id="profile-tab" href="#">Profile</a></li>
-            @if($user->show_art)<li class="nav-item"><a class="nav-link" id="your-art-tab" href="#">Art</a></li>@endif
-            @if($user->show_history)<li class="nav-item"><a class="nav-link" id="history-tab" href="#">History</a></li>@endif
-            @if($user->show_comments)<li class="nav-item"><a class="nav-link" id="comments-tab" href="#">Comments</a></li>@endif
-        </ul>
-
-        <div id="profile-content">
-            <div class="profile-header">
-                <img src="{{ $user->user_profile_pic ? asset('assets/uploads/' . $user->user_profile_pic) : asset('assets/images/blank-profile-picture.png') }}" class="profile-avatar">
-                <div class="profile-info">
-                    <h3>{{ $user->user_userName }} <span class="badge bg-primary">{{ $user->user_type }}</span></h3>
-                    @if($user->account_status === 'banned') <span class="badge bg-danger">Banned</span> @endif
-                </div>
-                
-                @if($isOwnProfile)
-                <div class="profile-actions">
-                    <a href="{{ route('settings.index') }}" class="btn btn-profile">Edit Profile</a>
-                </div>
-                @endif
+    <div class="container d-flex flex-column align-items-center">
+        <div class="auth-card">
+            <div class="text-center mb-4">
+                <h1 class="brand-title mb-2">BattleArt</h1>
+                <p class="subtitle">Set your new password below.</p>
             </div>
-            <div class="stats-grid">
-                <div class="stat-item"><h6>Challenges</h6><p>{{ $challenges_count }}</p></div>
-                <div class="stat-item"><h6>Interpretations</h6><p>{{ $interpretations_count }}</p></div>
-                <div class="stat-item"><h6>Total Art</h6><p>{{ $total_art }}</p></div>
-            </div>
-            <div class="welcome-section">
-                <p>{!! nl2br(e($user->user_bio)) !!}</p>
-                <div class="star-rating">
-                    <strong>{{ $avg_rating }}</strong> stars ({{ $rating_count }} reviews)
-                </div>
-            </div>
-        </div>
 
-        <div id="your-art-content" style="display:none;">
-            <div class="row">
-                @foreach($user_challenges as $art)
-                    <div class="col-md-4 mb-4">
-                        <div class="card art-card">
-                            <img src="{{ asset('assets/uploads/'.$art->original_art_filename) }}" class="card-img-top">
-                            <div class="card-body">
-                                <h6>{{ $art->challenge_name }}</h6>
-                                <a href="{{ url('challenge/'.$art->challenge_id) }}" class="btn btn-sm btn-primary">View</a>
-                            </div>
-                        </div>
+            @if ($errors->any())
+                <div class="alert alert-danger shadow-sm mb-4">
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('password.update') }}">
+                @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">New Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="Enter new password">
                     </div>
-                @endforeach
+                </div>
+
+                <div class="mb-4">
+                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required placeholder="Confirm new password">
+                    </div>
+                </div>
+
+                <div class="d-grid mb-4">
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fas fa-check-circle me-2"></i> Reset Password
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center">
+                <a href="{{ route('login') }}" class="back-link">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Login
+                </a>
             </div>
         </div>
-        
-        </div>
-    
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Your existing JS for tab switching
-        document.querySelectorAll('.profile-tabs .nav-link').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.profile-tabs .nav-link').forEach(t => t.classList.remove('active'));
-                e.target.classList.add('active');
-                
-                const contentId = e.target.id.replace('-tab', '-content');
-                ['profile-content', 'your-art-content', 'history-content', 'comments-content'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.style.display = (id === contentId) ? 'block' : 'none';
-                });
-            });
-        });
-    </script>
 </body>
 </html>
